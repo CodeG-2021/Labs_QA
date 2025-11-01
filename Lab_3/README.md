@@ -8,7 +8,7 @@ Se definieron cuatro casos de prueba de caja negra empleando diferentes técnica
 
 1. **Búsqueda exitosa con datos válidos (Clases de equivalencia)**: verifica una búsqueda estándar con destino y fechas futuras.
 2. **Validación de destino obligatorio (Clases de equivalencia inválida)**: confirma que se muestra el mensaje de error cuando el destino está vacío.
-3. **Validación de fecha mínima (Valores límite)**: asegura que la fecha de salida anterior a la fecha de entrada está deshabilitada.
+3. **Restricción de fechas pasadas (Valores límite)**: asegura que el calendario impide seleccionar fechas anteriores al día actual.
 4. **Configuración de ocupación (Combinación por pares)**: valida que la URL resultante conserva la ocupación seleccionada (2 adultos, 1 menor de 10 años).
 
 Cada prueba está documentada en `cypress/e2e/booking-search.spec.ts` con comentarios que describen nombre, objetivo, datos de entrada y resultado esperado.

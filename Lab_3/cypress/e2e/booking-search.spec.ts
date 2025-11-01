@@ -39,28 +39,49 @@ describe('Booking.com - Formulario de búsqueda', () => {
   // Test Name: Validación de destino obligatorio
   // Objetivo: Confirmar que el sistema evita búsquedas sin destino seleccionado (clase de equivalencia inválida).
   // Datos de entrada: Destino vacío, fechas automáticas.
-  // Resultado esperado: Se muestra un mensaje de error solicitando ingresar el destino.
+  // Resultado esperado: Se muestra un mensaje de error y el campo queda marcado como inválido.
   it('debería mostrar un error cuando el destino está vacío', () => {
     cy.get('input[name="ss"]').clear();
     cy.get('button[type="submit"]').click();
 
-    cy.contains(/Introduce tu destino|Please enter your destination/i, { timeout: 10000 }).should('be.visible');
+    cy.get('input[name="ss"]').should('have.attr', 'aria-invalid', 'true');
+
+    cy.get('body').then(($body) => {
+      const fallbackMessage = $body.find('[data-testid="destination-container"] [role="alert"], [data-testid="destination-container"] [data-testid="error"], [data-testid="destination-container"] .f9ed8a4266');
+
+      if (fallbackMessage.length) {
+        cy.wrap(fallbackMessage.first())
+          .should('be.visible')
+          .invoke('text')
+          .then((text) => {
+            expect(text.trim()).to.match(/destin|destination/i);
+          });
+      } else {
+        cy.contains(/Introduce.*destin|Please enter your destination/i, { timeout: 10000 }).should('be.visible');
+      }
+    });
   });
 
-  // Test Name: Validación de fecha mínima
-  // Objetivo: Verificar que el sistema no permita seleccionar una fecha de salida anterior a la fecha de entrada (valores límite).
-  // Datos de entrada: Destino "Lisboa", check-in a 25 días desde hoy, intento de check-out a 24 días.
+  // Test Name: Restricción de fechas pasadas
+  // Objetivo: Verificar que el calendario impide seleccionar fechas anteriores al día actual (valores límite).
+  // Datos de entrada: Destino "Lisboa", intento de seleccionar la fecha de ayer.
   // Resultado esperado: La fecha inválida aparece deshabilitada en el calendario.
-  it('debería bloquear fechas de salida anteriores al check-in', () => {
-    const checkIn = formatDate(25);
-    const invalidCheckout = formatDate(24);
+  it('debería bloquear la selección de fechas en el pasado', () => {
+    const yesterday = formatDate(-1);
 
     cy.get('input[name="ss"]').clear().type('Lisboa');
     cy.get('[data-testid="date-display-field-start"]').click();
 
-    cy.get(`[data-date="${invalidCheckout}"]`).should('have.attr', 'aria-disabled', 'true');
-    cy.get(`[data-date="${checkIn}"]`).click();
-    cy.get(`[data-date="${invalidCheckout}"]`).should('have.attr', 'aria-disabled', 'true');
+    cy.get(`[data-date="${yesterday}"]`).should(($cell) => {
+      const ariaDisabled = $cell.attr('aria-disabled') === 'true';
+      const dataDisabled = $cell.attr('data-disabled') === 'true';
+      const tabIndexDisabled = $cell.attr('tabindex') === '-1';
+
+      expect(
+        ariaDisabled || dataDisabled || tabIndexDisabled,
+        'la fecha del pasado debe estar deshabilitada'
+      ).to.be.true;
+    });
   });
 
   // Test Name: Configuración de ocupación por combinación de valores

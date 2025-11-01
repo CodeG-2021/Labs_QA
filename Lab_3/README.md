@@ -31,5 +31,3 @@ npm run cypress:run    # Ejecuta las pruebas en modo headless
 El archivo de configuración (`cypress.config.ts`) incluye el patrón `cypress/e2e/**/*.spec.ts`, por lo que los archivos de prueba con esa terminación aparecerán automáticamente en el runner una vez instaladas las dependencias.
 
 > **Nota:** Las pruebas apuntan al entorno real de Booking.com y pueden requerir una conexión estable a Internet.
-
-Antes de lanzar los casos de prueba actualiza el correo y la contraseña de ejemplo utilizados en `cypress/support/commands.ts` (función `loginToBooking`) con credenciales válidas, ya que el flujo de autenticación se ejecuta automáticamente en el `beforeEach` de cada escenario.

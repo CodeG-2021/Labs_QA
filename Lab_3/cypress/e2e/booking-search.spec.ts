@@ -6,7 +6,11 @@ const formatDate = (offsetDays: number): string => {
 
 describe('Booking.com - Formulario de búsqueda', () => {
   beforeEach(() => {
-    cy.loginToBooking();
+    cy.visit('/', {
+      headers: {
+        'Accept-Language': 'es-ES'
+      }
+    });
   });
 
   afterEach(() => {
